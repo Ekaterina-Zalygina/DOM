@@ -68,9 +68,9 @@
   </body>
 
   <script>
-        // "use strict";
+    // "use strict";
 
-        const buttonElement = document.getElementById("add-form-button");
+    const buttonElement = document.getElementById("add-form-button");
     const ListElement = document.getElementById("comments")
     const inputNameElement = document.getElementById("input-name")
     const inputTextElement = document.getElementById("input-text")
@@ -91,27 +91,31 @@
         return;
       };
 
-      // let TimeElement = new Date();
-      // let fullDate = myDate.getDate() + month[myDate.getMonth()] + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
-    
-      const oldListHTML = ListElement.innerHTML 
+      const day = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+      const month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+
+      let myDate = new Date();
+      let fullDate = myDate.getDate() + '.' + myDate.getMonth() + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
+
+      const oldListHTML = ListElement.innerHTML
       ListElement.innerHTML = oldListHTML + `<li class="comment" id="comment">
-          <div class="comment-header">
-            <div>${inputNameElement.value}</div>
-            // <div>${TimeElement}</div> // Если записать дату, то она не отображается как 00.00.0000 00:00, а пишет дату и по какому часовому поясу время 
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${inputTextElement.value}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">3</span> // Просто ноль записать я не могу, это же параметр должен изменяться, а как сделать его изменяющимся? 
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>`
+      <div class="comment-header">
+      <div>${inputNameElement.value}</div>
+      <div>${fullDate}</div>
+      </div>
+      <div class="comment-body">
+      <div class="comment-text">
+      ${inputTextElement.value}
+      </div>
+      </div>
+      <div class="comment-footer">
+      <div class="likes">
+      <span class="likes-counter">0</span>
+      <button class="like-button" data-likes="0"></button>
+      </div>
+      </div>
+     </li>`
+
     })
 
     // console.log("It works!");
