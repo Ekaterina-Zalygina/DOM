@@ -69,34 +69,46 @@
 
   <script>
     // "use strict";
-
     const buttonElement = document.getElementById("add-form-button");
     const ListElement = document.getElementById("comments")
     const inputNameElement = document.getElementById("input-name")
     const inputTextElement = document.getElementById("input-text")
     const TimeElement = document.getElementById("Time")
-
+  
+    const initEventListeners = () => {
+      const LikesElements = document.querySelectorAll('.like-button')
+      console.log(LikesElements)
+  
+      for (const LikesElement of LikesElements) {
+        LikesElement.addEventListener('click', () => {
+          console.log(LikesElement.dataset.likes)
+        })
+      }
+    }
+  
+    initEventListeners();
+  
     buttonElement.addEventListener("click", () => {
-
+  
       inputNameElement.style.backgroundColor = "";
       inputTextElement.style.backgroundColor = "";
-
+  
       if (inputNameElement.value === "") {
         inputNameElement.style.backgroundColor = "red";
         return;
       };
-
+  
       if (inputTextElement.value === "") {
         inputTextElement.style.backgroundColor = "red";
         return;
       };
-
+  
       const day = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
       const month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-
+  
       let myDate = new Date();
       let fullDate = myDate.getDate() + '.' + myDate.getMonth() + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
-
+  
       const oldListHTML = ListElement.innerHTML
       ListElement.innerHTML = oldListHTML + `<li class="comment" id="comment">
       <div class="comment-header">
@@ -111,13 +123,14 @@
       <div class="comment-footer">
       <div class="likes">
       <span class="likes-counter">0</span>
-      <button class="like-button" data-likes="0"></button>
+      <button class="like-button" data-likes="${com}"></button> // не понимаю что тут писать, чтобы в консоль выводился 0
       </div>
       </div>
-     </li>`
-
+      </li>`
+  
+      initEventListeners();
+  
     })
-
     // console.log("It works!");
   </script>
 
