@@ -1,137 +1,167 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Проект "Комменты"</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
 
-  <body>
-    <div class="container">
-      <ul class="comments" id="comments" >
-        <li class="comment" id="comment">
-          <div class="comment-header">
-            <div>Глеб Фокин</div>
-            <div id="Time">12.02.22 12:18</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Это будет первый комментарий на этой странице
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">3</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-        <li class="comment">
-          <div class="comment-header">
-            <div>Варвара Н.</div>
-            <div>13.02.22 19:22</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Мне нравится как оформлена эта страница! ❤
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">75</span>
-              <button class="like-button -active-like"></button>
-            </div>
-          </div>
-        </li>
-      </ul>
-      <div class="add-form">
-        <input
-          type="text"
-          class="add-form-name"
-          placeholder="Введите ваше имя"
-          id="input-name"
-          value="имя"
-        />
-        <textarea
-          type="textarea"
-          class="add-form-text"
-          placeholder="Введите ваш коментарий"
-          rows="4"
-          id="input-text"
-          value="комментарий"
-        ></textarea>
-        <div class="add-form-row">
-          <button class="add-form-button" id="add-form-button">Написать</button>
-        </div>
+<head>
+  <title>Проект "Комменты"</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <ul class="comments" id="comments">
+      <!-- Рендерится из JS   -->
+    </ul>
+    <div class="add-form">
+      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="input-name" value="имя" />
+      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4" id="input-text"
+        value="комментарий"></textarea>
+      <div class="add-form-row">
+        <button class="add-form-button" id="add-form-button">Написать</button>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 
-  <script>
-    // "use strict";
-    const buttonElement = document.getElementById("add-form-button");
-    const ListElement = document.getElementById("comments")
-    const inputNameElement = document.getElementById("input-name")
-    const inputTextElement = document.getElementById("input-text")
-    const TimeElement = document.getElementById("Time")
-  
-    const initEventListeners = () => {
-      const LikesElements = document.querySelectorAll('.like-button')
-      console.log(LikesElements)
-  
-      for (const LikesElement of LikesElements) {
-        LikesElement.addEventListener('click', () => {
-          console.log(LikesElement.dataset.likes)
-        })
-      }
+<script>
+  // "use strict";
+  const buttonElement = document.getElementById("add-form-button");
+  const ListElement = document.getElementById("comments")
+  const inputNameElement = document.getElementById("input-name")
+  const inputTextElement = document.getElementById("input-text")
+  const TimeElement = document.getElementById("Time")
+  const LikeButtons = document.querySelectorAll("like-button")
+  const LikesCounter = document.getElementById("likes-counter")
+
+  const Comments = [
+    {
+      name: "Глеб Фокин",
+      date: "12.02.22 12:18",
+      text: "Это будет первый комментарий на этой странице",
+      like: 3,
+      isLiked: false
+    },
+    {
+      name: "Варвара Н.",
+      date: "13.02.22 19:22",
+      text: "Мне нравится как оформлена эта страница! ❤",
+      like: 75,
+      isLiked: false
     }
+  ];
+
+  //код ниже увидела в вопросах к дз, переделала на свой лад, но лайки все равно не ставятся 
+  const LikesUser = () => {
+    const LikeButtons = document.querySelectorAll(".like-button")
+    for (const LikeButtons of LikeButton) {
+      LikeButtons.addEventListener("click", () => {
+        const index = LikeButtons.dataset.index;
+
+        if (Comments[index].isLiked === false) {
+          Comments[index].isLiked = true;
+          Comments[index].like++;
+        }
+        else {
+          Comments[index].isLiked = false; 
+          Comments[index].like--; 
+        }
+        renderComments() //что-то мне подказывается что тут должен быть другой рендер, т.к comments у меня относится к структуре комментария,а не к лайкам
+      })
+    }
+  }
   
+  const renderComments = () => {
+    const CommentsHTML = Comments.map((comment, index) => {
+    return `<li class="comment" id="comment">
+    <div class="comment-header">
+    <div>${comment.name}</div>
+    <div>${comment.date}</div>
+    </div>
+    <div class="comment-body">
+    <div class="comment-text">
+    ${comment.text}
+    </div>
+    </div>
+    <div class="comment-footer">
+    <div class="likes">
+    <span class="likes-counter" id="LikesCounter">${comment.like}</span>
+    <button class="like-button" id="LikeButton" data-likes="${comment.like}"></button>
+    </div>
+    </div>
+    </li>`
+    }).join('');
+
+    ListElement.innerHTML = CommentsHTML
+    
+  }
+
+  renderComments();
+
+  const initEventListeners = () => {
+    const LikesElements = document.querySelectorAll('.like-button')
+    console.log(LikesElements)
+
+    for (const LikesElement of LikesElements) {
+      LikesElement.addEventListener('click', () => {
+        console.log(LikesElement.dataset.likes)
+      })
+    }
+  }
+
+   // Удаление комментария 
+   // в  const renderComments в случае чего вставить строчку <button class="delete-button" data-index="index">Удалить</button> , т.к в функции она почему-то не комметировалась, чтобы не потерять, написала сюда как заметку 
+
+  // const initDeleteButtonsListeners  = () => {
+  //   const DeleteButtonElements = document.querySelectorAll('.delete-button')
+
+  //   for(const DeleteButtonsElements of DeleteButtonElements) {
+  //     DeleteButtonsElements.addEventListener('click', () => {
+  //       const index = DeleteButtonsElements.dataset.index
+  //       Comments.splice(index, 1)
+  //       renderComments();
+  //     })
+  //   }
+  // }
+
+  initEventListeners();
+  // initDeleteButtonsListeners();
+
+  buttonElement.addEventListener("click", () => {
+
+    inputNameElement.style.backgroundColor = "";
+    inputTextElement.style.backgroundColor = "";
+
+    if (inputNameElement.value === "") {
+      inputNameElement.style.backgroundColor = "red";
+      return;
+    };
+
+    if (inputTextElement.value === "") {
+      inputTextElement.style.backgroundColor = "red";
+      return;
+    };
+
+    const day = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+    const month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+
+    let myDate = new Date();
+    let Mymonth = myDate.getMonth() + 1
+    let fullDate = myDate.getDate() + '.' + Mymonth + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
+
+    Comments.push({
+      name: inputNameElement.value,
+      date: fullDate,
+      text: inputTextElement.value,
+      like: 0,
+      isLiked: false
+    });
+    renderComments();
+
     initEventListeners();
-  
-    buttonElement.addEventListener("click", () => {
-  
-      inputNameElement.style.backgroundColor = "";
-      inputTextElement.style.backgroundColor = "";
-  
-      if (inputNameElement.value === "") {
-        inputNameElement.style.backgroundColor = "red";
-        return;
-      };
-  
-      if (inputTextElement.value === "") {
-        inputTextElement.style.backgroundColor = "red";
-        return;
-      };
-  
-      const day = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
-      const month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-  
-      let myDate = new Date();
-      let fullDate = myDate.getDate() + '.' + myDate.getMonth() + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
-  
-      const oldListHTML = ListElement.innerHTML
-      ListElement.innerHTML = oldListHTML + `<li class="comment" id="comment">
-      <div class="comment-header">
-      <div>${inputNameElement.value}</div>
-      <div>${fullDate}</div>
-      </div>
-      <div class="comment-body">
-      <div class="comment-text">
-      ${inputTextElement.value}
-      </div>
-      </div>
-      <div class="comment-footer">
-      <div class="likes">
-      <span class="likes-counter">0</span>
-      <button class="like-button" data-likes="${com}"></button> // не понимаю что тут писать, чтобы в консоль выводился 0
-      </div>
-      </div>
-      </li>`
-  
-      initEventListeners();
-  
-    })
-    // console.log("It works!");
-  </script>
+    // initDeleteButtonsListeners();
+
+  })
+  // console.log("It works!");
+</script>
 
 </html>
