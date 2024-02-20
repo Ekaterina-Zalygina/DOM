@@ -50,10 +50,9 @@
     }
   ];
 
-  //код ниже увидела в вопросах к дз, переделала на свой лад, но лайки все равно не ставятся 
   const LikesUser = () => {
     const LikeButtons = document.querySelectorAll(".like-button")
-    for (const LikeButtons of LikeButton) {
+    for (const LikeButtons of LikeButton) 
       LikeButtons.addEventListener("click", () => {
         const index = LikeButtons.dataset.index;
 
@@ -65,9 +64,8 @@
           Comments[index].isLiked = false; 
           Comments[index].like--; 
         }
-        renderComments() //что-то мне подказывается что тут должен быть другой рендер, т.к comments у меня относится к структуре комментария,а не к лайкам
+        renderComments() 
       })
-    }
   }
   
   const renderComments = () => {
@@ -85,14 +83,14 @@
     <div class="comment-footer">
     <div class="likes">
     <span class="likes-counter" id="LikesCounter">${comment.like}</span>
-    <button class="like-button" id="LikeButton" data-likes="${comment.like}"></button>
+    <button class="like-button" id="LikeButton" data-index="${index}"></button>
     </div>
     </div>
     </li>`
     }).join('');
 
     ListElement.innerHTML = CommentsHTML
-    
+    LikesUser();
   }
 
   renderComments();
