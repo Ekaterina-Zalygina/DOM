@@ -14,7 +14,7 @@
     </ul>
     <div class="add-form">
       <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="input-name" value="имя" />
-      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4" id="input-text"
+      <textarea type="textarea" class="add-form-text" id="add-form-text" placeholder="Введите ваш коментарий" rows="4"
         value="комментарий"></textarea>
       <div class="add-form-row">
         <button class="add-form-button" id="add-form-button">Написать</button>
@@ -28,7 +28,7 @@
   const buttonElement = document.getElementById("add-form-button");
   const ListElement = document.getElementById("comments")
   const inputNameElement = document.getElementById("input-name")
-  const inputTextElement = document.getElementById("input-text")
+  const inputTextElement = document.getElementById("add-form-text")
   const TimeElement = document.getElementById("Time")
   const LikeButtons = document.querySelectorAll("like-button")
   const LikesCounter = document.getElementById("likes-counter")
@@ -52,8 +52,9 @@
 
   const LikesUser = () => {
     const LikeButtons = document.querySelectorAll(".like-button")
-    for (const LikeButtons of LikeButton) 
-      LikeButtons.addEventListener("click", () => {
+    for (const LikeButtons of LikeButton)
+      LikeButtons.addEventListener("click", (event) => {
+        event.stopPropagation()
         const index = LikeButtons.dataset.index;
 
         if (Comments[index].isLiked === false) {
@@ -61,22 +62,34 @@
           Comments[index].like++;
         }
         else {
-          Comments[index].isLiked = false; 
-          Comments[index].like--; 
+          Comments[index].isLiked = false;
+          Comments[index].like--;
         }
-        renderComments() 
+        renderComments()
       })
   }
-  
+
+  const ReplyToСomment = () => {
+    const CommUser = document.querySelectorAll(".comment-text")
+    for (const CommUsers of CommUser)
+      CommUsers.addEventListener("click", () => {
+        const index = CommUsers.dataset.index;
+        const inputTextElement = document.getElementById("add-form-text");
+        const CaseTextComment = document.querySelectorAll(".comment-body");
+        inputTextElement.value =  `${Comments[index].name}: ${Comments[index].text}`;
+        renderComments();
+    })
+  }
+
   const renderComments = () => {
     const CommentsHTML = Comments.map((comment, index) => {
-    return `<li class="comment" id="comment">
+      return `<li class="comment" id="comment">
     <div class="comment-header">
     <div>${comment.name}</div>
     <div>${comment.date}</div>
     </div>
     <div class="comment-body">
-    <div class="comment-text">
+    <div class="comment-text" data-index="${index}">
     ${comment.text}
     </div>
     </div>
@@ -90,7 +103,9 @@
     }).join('');
 
     ListElement.innerHTML = CommentsHTML
+
     LikesUser();
+    ReplyToСomment();
   }
 
   renderComments();
@@ -106,8 +121,8 @@
     }
   }
 
-   // Удаление комментария 
-   // в  const renderComments в случае чего вставить строчку <button class="delete-button" data-index="index">Удалить</button> , т.к в функции она почему-то не комметировалась, чтобы не потерять, написала сюда как заметку 
+  // Удаление комментария 
+  // в  const renderComments в случае чего вставить строчку <button class="delete-button" data-index="index">Удалить</button> , т.к в функции она почему-то не комметировалась, чтобы не потерять, написала сюда как заметку 
 
   // const initDeleteButtonsListeners  = () => {
   //   const DeleteButtonElements = document.querySelectorAll('.delete-button')
@@ -147,9 +162,9 @@
     let fullDate = myDate.getDate() + '.' + Mymonth + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
 
     Comments.push({
-      name: inputNameElement.value,
+      name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
       date: fullDate,
-      text: inputTextElement.value,
+      text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
       like: 0,
       isLiked: false
     });
