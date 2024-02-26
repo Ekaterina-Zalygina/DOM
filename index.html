@@ -33,39 +33,74 @@
   const LikeButtons = document.querySelectorAll("like-button")
   const LikesCounter = document.getElementById("likes-counter")
 
-  const Comments = [
-    {
-      name: "Глеб Фокин",
-      date: "12.02.22 12:18",
-      text: "Это будет первый комментарий на этой странице",
-      like: 3,
-      isLiked: false
-    },
-    {
-      name: "Варвара Н.",
-      date: "13.02.22 19:22",
-      text: "Мне нравится как оформлена эта страница! ❤",
-      like: 75,
-      isLiked: false
-    }
-  ];
+  function fetchGet() {
+    const fetchPromise = fetch(
+      'https://wedev-api.sky.pro/api/v1/ekaterina-zalygina/comments', {
+      method: "GET",
+    });
+
+    fetchPromise.then((response) => {
+
+      const jsonPromise = response.json();
+
+      jsonPromise.then((responseData) => {
+        const appComments = responseData.comments.map((comment) => {
+          return {
+            name: comment.author.name,
+            date: comment.date,
+            text: comment.text,
+            likes: comment.likes,
+            isLiked: false
+          }
+        })
+        Comments = appComments
+        renderCommentsSample()
+      });
+    });
+  }
+
+
+
+  let Comments = []
+  //   {
+  //     name: "Глеб Фокин",
+  //     date: "12.02.22 12:18",
+  //     text: "Это будет первый комментарий на этой странице",
+  //     like: 3,
+  //     isLiked: false
+  //   },
+  //   {
+  //     name: "Варвара Н.",
+  //     date: "13.02.22 19:22",
+  //     text: "Мне нравится как оформлена эта страница! ❤",
+  //     like: 75,
+  //     isLiked: false
+  //   }
+  // ];
+  fetchGet()
+
+  const jsonComments = JSON.stringify(Comments);
+  console.log(jsonComments)
+
+  // const CommentsNew = JSON.parse(jsonComments);
+  // console.log(CommentsNew)
 
   const LikesUser = () => {
     const LikeButtons = document.querySelectorAll(".like-button")
-    for (const LikeButtons of LikeButton)
-      LikeButtons.addEventListener("click", (event) => {
+    for (const LikeButton of LikeButtons)
+      LikeButton.addEventListener("click", (event) => {
         event.stopPropagation()
-        const index = LikeButtons.dataset.index;
+        const index = LikeButton.dataset.index;
 
         if (Comments[index].isLiked === false) {
           Comments[index].isLiked = true;
-          Comments[index].like++;
+          Comments[index].likes++;
         }
         else {
           Comments[index].isLiked = false;
-          Comments[index].like--;
+          Comments[index].likes--;
         }
-        renderComments()
+        renderCommentsSample()
       })
   }
 
@@ -76,12 +111,12 @@
         const index = CommUsers.dataset.index;
         const inputTextElement = document.getElementById("add-form-text");
         const CaseTextComment = document.querySelectorAll(".comment-body");
-        inputTextElement.value =  `${Comments[index].name}: ${Comments[index].text}`;
-        renderComments();
-    })
+        inputTextElement.value = `${Comments[index].name}:\n${Comments[index].text}`;
+        renderCommentsSample();
+      })
   }
 
-  const renderComments = () => {
+  let renderCommentsSample = () => {
     const CommentsHTML = Comments.map((comment, index) => {
       return `<li class="comment" id="comment">
     <div class="comment-header">
@@ -95,7 +130,7 @@
     </div>
     <div class="comment-footer">
     <div class="likes">
-    <span class="likes-counter" id="LikesCounter">${comment.like}</span>
+    <span class="likes-counter" id="LikesCounter">${comment.likes}</span>
     <button class="like-button" id="LikeButton" data-index="${index}"></button>
     </div>
     </div>
@@ -108,7 +143,7 @@
     ReplyToСomment();
   }
 
-  renderComments();
+  renderCommentsSample();
 
   const initEventListeners = () => {
     const LikesElements = document.querySelectorAll('.like-button')
@@ -122,7 +157,7 @@
   }
 
   // Удаление комментария 
-  // в  const renderComments в случае чего вставить строчку <button class="delete-button" data-index="index">Удалить</button> , т.к в функции она почему-то не комметировалась, чтобы не потерять, написала сюда как заметку 
+  // в  const renderCommentsSample в случае чего вставить строчку <button class="delete-button" data-index="index">Удалить</button> , т.к в функции она почему-то не комметировалась, чтобы не потерять, написала сюда как заметку 
 
   // const initDeleteButtonsListeners  = () => {
   //   const DeleteButtonElements = document.querySelectorAll('.delete-button')
@@ -131,7 +166,7 @@
   //     DeleteButtonsElements.addEventListener('click', () => {
   //       const index = DeleteButtonsElements.dataset.index
   //       Comments.splice(index, 1)
-  //       renderComments();
+  //       renderCommentsSample();
   //     })
   //   }
   // }
@@ -161,15 +196,35 @@
     let Mymonth = myDate.getMonth() + 1
     let fullDate = myDate.getDate() + '.' + Mymonth + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
 
-    Comments.push({
-      name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-      date: fullDate,
-      text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-      like: 0,
-      isLiked: false
-    });
-    renderComments();
+    // Comments.push({
+    //   name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+    //   date: fullDate,
+    //   text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+    //   like: 0,
+    //   isLiked: false
+    // });
 
+
+    fetch('https://wedev-api.sky.pro/api/v1/ekaterina-zalygina/comments', {
+      method: "POST",
+      body: JSON.stringify({
+        name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+        text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+      })
+    }).then((response) => {
+      response.json().then((responseData) => {
+        Comments.push({
+          name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+          date: fullDate,
+          text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+          like: 0,
+          isLiked: false
+        })
+        fetchGet();
+      });
+    })
+
+    renderCommentsSample
     initEventListeners();
     // initDeleteButtonsListeners();
 
