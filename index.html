@@ -12,8 +12,8 @@
     <ul class="comments" id="comments">
       <!-- Рендерится из JS   -->
     </ul>
-    <div class="add-form">
-      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="input-name" value="имя" />
+    <div class="add-form" id="add-form">
+      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="input-name" value/>
       <textarea type="textarea" class="add-form-text" id="add-form-text" placeholder="Введите ваш коментарий" rows="4"
         value="комментарий"></textarea>
       <div class="add-form-row">
@@ -26,6 +26,7 @@
 <script>
   // "use strict";
   const buttonElement = document.getElementById("add-form-button");
+  const AddFormElement = document.getElementById("add-form")
   const ListElement = document.getElementById("comments")
   const inputNameElement = document.getElementById("input-name")
   const inputTextElement = document.getElementById("add-form-text")
@@ -40,6 +41,7 @@
     });
 
     fetchPromise.then((response) => {
+      ListElement.innerHTML = 'Идет загрузка, подождите';
 
       const jsonPromise = response.json();
 
@@ -131,7 +133,7 @@
     <div class="comment-footer">
     <div class="likes">
     <span class="likes-counter" id="LikesCounter">${comment.likes}</span>
-    <button class="like-button" id="LikeButton" data-index="${index}"></button>
+    <button class="like-button ${comment.isLiked ? '-active-like' : ""}" id="LikeButton" data-index="${index}"></button>
     </div>
     </div>
     </li>`
@@ -188,13 +190,19 @@
       inputTextElement.style.backgroundColor = "red";
       return;
     };
+  })
 
     const day = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
     const month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
 
     let myDate = new Date();
-    let Mymonth = myDate.getMonth() + 1
-    let fullDate = myDate.getDate() + '.' + Mymonth + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
+    let fullDate = myDate.toLocaleDateString() + ' ' + myDate.toLocaleTimeString()
+    myDate.toLocaleDateString();
+    myDate.toLocaleTimeString();
+    // console.log(fullDate)
+    
+    // let Mymonth = myDate.getMonth() + 1
+    // let fullDate = myDate.getDate() + '.' + Mymonth + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
 
     // Comments.push({
     //   name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
@@ -204,8 +212,11 @@
     //   isLiked: false
     // });
 
+    AddFormElement.disabled = true;
+    AddFormElement.textContent = "Добавляется";
 
-    fetch('https://wedev-api.sky.pro/api/v1/ekaterina-zalygina/comments', {
+     const FetchPromisePost = fetch(
+      'https://wedev-api.sky.pro/api/v1/ekaterina-zalygina/comments', {
       method: "POST",
       body: JSON.stringify({
         name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
@@ -213,22 +224,19 @@
       })
     }).then((response) => {
       response.json().then((responseData) => {
-        Comments.push({
-          name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-          date: fullDate,
-          text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-          like: 0,
-          isLiked: false
-        })
         fetchGet();
+        })
       });
-    })
+  
+
+    AddFormElement.disabled = false;
+    AddFormElement.textContent = "Написать";
 
     renderCommentsSample
     initEventListeners();
+    inputNameElement.value = " "
+    inputTextElement.value = " "
     // initDeleteButtonsListeners();
-
-  })
   // console.log("It works!");
 </script>
 
