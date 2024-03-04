@@ -51,7 +51,7 @@
           let myDate = new Date();
           let fullDate = myDate.toLocaleDateString() + ' ' + myDate.toLocaleTimeString()
           myDate.toLocaleDateString();
-          myDate.toLocaleTimeString();
+          myDate.toLocaleTimeString();      
 
           return {
             name: comment.author.name,
@@ -204,13 +204,8 @@
     const month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
 
     let myDate = new Date();
-    let fullDate = myDate.toLocaleDateString() + ' ' + myDate.toLocaleTimeString()
-    myDate.toLocaleDateString();
-    myDate.toLocaleTimeString();
-
-    // let myDate = new Date();
-    // let Mymonth = myDate.getMonth() + 1
-    // let fullDate = myDate.getDate() + '.' + Mymonth + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
+    let Mymonth = myDate.getMonth() + 1
+    let fullDate = myDate.getDate() + '.' + Mymonth + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
 
     // Comments.push({
     //   name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
@@ -232,9 +227,22 @@
           text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
         })
       })
-        .then((response) => {
-          return response
-        })
+      .then((response) => {
+
+        if (response.status === 400) {
+          throw new Error("Вы ввели имя короче 3-х символов");
+        } else if (response.status === 500) {
+          throw new Error("Ошибка сервера");
+        }
+      })
+        // .then((response) => {
+        //   return response
+        //   if (response.status === 201) {
+        //     return response.json()
+        //   } else {
+        //     return Promise.peject('Сервер сломался, попробуй позже')
+        //   }
+        // })
         .then((response) => {
           return response.json()
         })
@@ -251,6 +259,12 @@
          buttonElement.textContent = "Написать";
          inputTextElement.value = " "
          inputNameElement.value = " "
+        })
+        .catch((error) => {
+          buttonElement.disabled = false;
+          buttonElement.textContent = "Написать";
+          alert('Кажется, у вас сломался интернет, попробуйте позже')
+          console.warm(error)
         })
     }
     fetchPost();
