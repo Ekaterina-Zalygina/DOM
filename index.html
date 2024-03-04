@@ -9,11 +9,12 @@
 
 <body>
   <div class="container">
+    <div class="loading" id="loading">Комментарии загружаются...</div>
     <ul class="comments" id="comments">
       <!-- Рендерится из JS   -->
     </ul>
-    <div class="add-form" id="add-form">
-      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="input-name" value/>
+    <div class="add-form">
+      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="input-name" value="имя" />
       <textarea type="textarea" class="add-form-text" id="add-form-text" placeholder="Введите ваш коментарий" rows="4"
         value="комментарий"></textarea>
       <div class="add-form-row">
@@ -26,13 +27,13 @@
 <script>
   // "use strict";
   const buttonElement = document.getElementById("add-form-button");
-  const AddFormElement = document.getElementById("add-form")
   const ListElement = document.getElementById("comments")
   const inputNameElement = document.getElementById("input-name")
   const inputTextElement = document.getElementById("add-form-text")
   const TimeElement = document.getElementById("Time")
   const LikeButtons = document.querySelectorAll("like-button")
   const LikesCounter = document.getElementById("likes-counter")
+  const loading = document.getElementById('loading')
 
   function fetchGet() {
     const fetchPromise = fetch(
@@ -41,15 +42,20 @@
     });
 
     fetchPromise.then((response) => {
-      ListElement.innerHTML = 'Идет загрузка, подождите';
 
       const jsonPromise = response.json();
 
       jsonPromise.then((responseData) => {
         const appComments = responseData.comments.map((comment) => {
+
+          let myDate = new Date();
+          let fullDate = myDate.toLocaleDateString() + ' ' + myDate.toLocaleTimeString()
+          myDate.toLocaleDateString();
+          myDate.toLocaleTimeString();
+
           return {
             name: comment.author.name,
-            date: new Date(comment.date),
+            date: fullDate,
             text: comment.text,
             likes: comment.likes,
             isLiked: false
@@ -57,6 +63,9 @@
         })
         Comments = appComments
         renderCommentsSample()
+        loading.style.display = "none"
+        inputTextElement.value = " "
+        inputNameElement.value = " "
       });
     });
   }
@@ -190,7 +199,6 @@
       inputTextElement.style.backgroundColor = "red";
       return;
     };
-  })
 
     const day = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
     const month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
@@ -199,8 +207,8 @@
     let fullDate = myDate.toLocaleDateString() + ' ' + myDate.toLocaleTimeString()
     myDate.toLocaleDateString();
     myDate.toLocaleTimeString();
-    // console.log(fullDate)
-    
+
+    // let myDate = new Date();
     // let Mymonth = myDate.getMonth() + 1
     // let fullDate = myDate.getDate() + '.' + Mymonth + '.' + myDate.getFullYear() + ' ' + myDate.getHours() + ':' + myDate.getMinutes()
 
@@ -212,31 +220,46 @@
     //   isLiked: false
     // });
 
-    AddFormElement.disabled = true;
-    AddFormElement.textContent = "Добавляется";
+    buttonElement.disabled = true;
+    buttonElement.textContent = "Комментарий добавляется...";
 
-     const FetchPromisePost = fetch(
-      'https://wedev-api.sky.pro/api/v1/ekaterina-zalygina/comments', {
-      method: "POST",
-      body: JSON.stringify({
-        name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-        text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-      })
-    }).then((response) => {
-      response.json().then((responseData) => {
-        fetchGet();
+    function fetchPost() {
+
+      fetch('https://wedev-api.sky.pro/api/v1/ekaterina-zalygina/comments', {
+        method: "POST",
+        body: JSON.stringify({
+          name: inputNameElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+          text: inputTextElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
         })
-      });
-  
-
-    AddFormElement.disabled = false;
-    AddFormElement.textContent = "Написать";
+      })
+        .then((response) => {
+          return response
+        })
+        .then((response) => {
+          return response.json()
+        })
+        .then((responseData) => {
+          return fetch("https://wedev-api.sky.pro/api/v1/ekaterina-zalygina/comments", {
+            method: "GET",
+          });
+        })
+        .then((responseData) => {
+          return fetchGet();
+        })
+        .then(() => {
+         buttonElement.disabled = false;
+         buttonElement.textContent = "Написать";
+         inputTextElement.value = " "
+         inputNameElement.value = " "
+        })
+    }
+    fetchPost();
 
     renderCommentsSample
     initEventListeners();
-    inputNameElement.value = " "
-    inputTextElement.value = " "
     // initDeleteButtonsListeners();
+
+  })
   // console.log("It works!");
 </script>
 
