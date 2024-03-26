@@ -1,5 +1,5 @@
 import { fetchGet, fetchPost } from "./api.js";
-import { renderCommentsSample } from "./renderComments.js";
+import { CommentsSample, LikesUser, ReplyToСomment } from "./render.js";
 
 // "use strict";
 const buttonElement = document.getElementById("add-form-button");
@@ -48,7 +48,7 @@ fetchGet().then((responseData) => {
         }
     })
     Comments = appComments
-    renderCommentsSample( {Comments, ListElement, LikesUser, ReplyToСomment } )
+    CommentsSample({Comments, ListElement, ReplyToСomment})
     loading.style.display = "none"
     inputTextElement.value = ""
     inputNameElement.value = ""
@@ -61,46 +61,19 @@ fetchGet().then((responseData) => {
     alert(error.message)
 })
 
+fetchGet()
+CommentsSample({Comments, ListElement, ReplyToСomment})
+
 const jsonComments = JSON.stringify(Comments);
 console.log(jsonComments)
 
 // const CommentsNew = JSON.parse(jsonComments);
 // console.log(CommentsNew)
 
-const LikesUser = () => {
-    const LikeButtons = document.querySelectorAll(".like-button")
-    for (const LikeButton of LikeButtons)
-        LikeButton.addEventListener("click", (event) => {
-            event.stopPropagation()
-            const index = LikeButton.dataset.index;
+LikesUser()
+ReplyToСomment()
 
-            if (Comments[index].isLiked === false) {
-                Comments[index].isLiked = true;
-                Comments[index].likes++;
-            }
-            else {
-                Comments[index].isLiked = false;
-                Comments[index].likes--;
-            }
-            renderCommentsSample( { Comments, ListElement, LikesUser, ReplyToСomment } )
-        })
-}
-
-const ReplyToСomment = () => {
-    const CommUser = document.querySelectorAll(".comment-text")
-    for (const CommUsers of CommUser)
-        CommUsers.addEventListener("click", () => {
-            const index = CommUsers.dataset.index;
-            const inputTextElement = document.getElementById("add-form-text");
-            const CaseTextComment = document.querySelectorAll(".comment-body");
-            inputTextElement.value = `${Comments[index].name}:\n${Comments[index].text}`;
-            renderCommentsSample( {Comments, ListElement, LikesUser, ReplyToСomment } );
-        })
-}
-
-renderCommentsSample( {Comments, ListElement, LikesUser, ReplyToСomment } )
-
-// renderCommentsSample();
+CommentsSample({Comments, ListElement, ReplyToСomment});
 
 const initEventListeners = () => {
     const LikesElements = document.querySelectorAll('.like-button')
@@ -175,6 +148,7 @@ buttonElement.addEventListener("click", () => {
             buttonElement.textContent = "Написать";
             inputTextElement.value = " "
             inputNameElement.value = " "
+            CommentsSample({Comments, ListElement, ReplyToСomment})
         })
         .catch((error) => {
             buttonElement.disabled = false;
@@ -196,14 +170,17 @@ buttonElement.addEventListener("click", () => {
             }
             console.warn(error)
         })
+
+    CommentsSample({Comments, ListElement, ReplyToСomment})
     buttonElement.disabled = false;
 
 
 
+
     // fetchPost();
-    //   fetchGet();
-    //   renderCommentsSample();
-    //   initEventListeners();
+    // fetchGet();
+    // renderCommentsSample();
+    // initEventListeners();
     // initDeleteButtonsListeners();
 
     // })
